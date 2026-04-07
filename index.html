@@ -45,7 +45,7 @@ select{font-size:13px;padding:5px 9px;border:0.5px solid #ccc;border-radius:7px;
 .fr label{font-size:12px;color:#666;font-weight:600}
 .ig{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:16px}
 .ic{background:#fff;border-radius:10px;padding:15px;border:0.5px solid #e0e0da;border-left:3px solid #ccc}
-.ic.red{border-left-color:#b00}.ic.grn{border-left-color:#1a7a3a}
+.ic.red{border-left-color:#b00}.ic.grn{border-left-color:#1a7a3a}.ic.ylw{border-left-color:#7a5f00}
 .ic-t{font-size:13px;font-weight:700;margin-bottom:6px;color:#1a1a1a}
 .ic-b{font-size:12px;color:#555;line-height:1.7}
 .qlg{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:12px}
@@ -416,16 +416,22 @@ function renderHeat(){
   makeHeatTable("expHeat",ESVC,ESS,D.exp_svc_growth);
   var mgs=D.zones.map(function(d){return d.mail_growth;});
   var egs=D.zones.map(function(d){return d.exp_growth;});
-  var mGZ=D.zones[mgs.indexOf(Math.max.apply(null,mgs))];
-  var mLZ=D.zones[mgs.indexOf(Math.min.apply(null,mgs))];
-  var eGZ=D.zones[egs.indexOf(Math.max.apply(null,egs))];
-  var eLZ=D.zones[egs.indexOf(Math.min.apply(null,egs))];
+  var mMaxZ=D.zones[mgs.indexOf(Math.max.apply(null,mgs))];
+  var mMinZ=D.zones[mgs.indexOf(Math.min.apply(null,mgs))];
+  var mAbsMin=mgs.map(function(v){return Math.abs(v);});
+  var mNear0=D.zones[mAbsMin.indexOf(Math.min.apply(null,mAbsMin))];
+  var eMaxZ=D.zones[egs.indexOf(Math.max.apply(null,egs))];
+  var eMinZ=D.zones[egs.indexOf(Math.min.apply(null,egs))];
+  var eAbsMin=egs.map(function(v){return Math.abs(v);});
+  var eNear0=D.zones[eAbsMin.indexOf(Math.min.apply(null,eAbsMin))];
   function ic(cl,t,b){return "<div class='ic "+cl+"'><div class='ic-t'>"+t+"</div><div class='ic-b'>"+b+"</div></div>";}
   document.getElementById("heat-insights").innerHTML=
-    ic("red","Mail — เขตที่เป้าโตสูงสุด",mGZ.zone+": "+pctS(mGZ.mail_growth)+" จาก "+fmtB(mGZ.mail_actual)+" → "+fmtB(mGZ.mail_ep))+
-    ic("grn","Mail — เขตที่เป้าเปลี่ยนน้อยสุด",mLZ.zone+": "+pctS(mLZ.mail_growth)+" จาก "+fmtB(mLZ.mail_actual)+" → "+fmtB(mLZ.mail_ep))+
-    ic("red","Express — เขตที่เป้าโตสูงสุด",eGZ.zone+": "+pctS(eGZ.exp_growth)+" จาก "+fmtB(eGZ.exp_actual)+" → "+fmtB(eGZ.exp_ep))+
-    ic("grn","Express — เขตที่เป้าเปลี่ยนน้อยสุด",eLZ.zone+": "+pctS(eLZ.exp_growth)+" จาก "+fmtB(eLZ.exp_actual)+" → "+fmtB(eLZ.exp_ep));
+    ic("red","Mail — เขตที่เป้าโตสูงสุด",mMaxZ.zone+": "+pctS(mMaxZ.mail_growth)+" จาก "+fmtB(mMaxZ.mail_actual)+" เป็น "+fmtB(mMaxZ.mail_ep))+
+    ic("grn","Mail — เขตที่เป้าลดมากที่สุด",mMinZ.zone+": "+pctS(mMinZ.mail_growth)+" จาก "+fmtB(mMinZ.mail_actual)+" เป็น "+fmtB(mMinZ.mail_ep))+
+    ic("ylw","Mail — เขตที่เป้าใกล้เคียง Actual 68 มากที่สุด",mNear0.zone+": "+pctS(mNear0.mail_growth)+" — เป้าแทบไม่เปลี่ยนจากปีก่อน")+
+    ic("red","Express — เขตที่เป้าโตสูงสุด",eMaxZ.zone+": "+pctS(eMaxZ.exp_growth)+" จาก "+fmtB(eMaxZ.exp_actual)+" เป็น "+fmtB(eMaxZ.exp_ep))+
+    ic("grn","Express — เขตที่เป้าลดมากที่สุด",eMinZ.zone+": "+pctS(eMinZ.exp_growth)+" จาก "+fmtB(eMinZ.exp_actual)+" เป็น "+fmtB(eMinZ.exp_ep))+
+    ic("ylw","Express — เขตที่เป้าใกล้เคียง Actual 68 มากที่สุด",eNear0.zone+": "+pctS(eNear0.exp_growth)+" — เป้าแทบไม่เปลี่ยนจากปีก่อน");
 }
 </script>
 </body>
